@@ -1,0 +1,184 @@
+:root{
+  --primaryColor: rgb(12, 12, 12);
+  --seconderyColor: #e9d5d7;
+  --thirdColor: #8bd6c4;
+  --grey: #f6f6f6;
+
+  font-size: 5vw;
+  color: var(--primaryColor);
+}
+
+/* Element */
+
+*{
+  font-family: 'Signika Negative', sans-serif;
+}
+
+body{
+  margin: 0;
+}
+input:focus{
+  outline: none;
+  border-bottom: 0.2rem solid var(--thirdColor) !important;
+}
+
+/* tags */
+.flexCol{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+.flexRow{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#intro{
+  width: 100vw;
+  height: 100vh;
+
+  justify-content: flex-end !important;
+
+  background-image: url("./images/enter.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.logo{
+  font-size: 3rem;
+  font-family: "logo";
+  font-weight: 300;
+  color: var(--primaryColor);
+}
+.form{
+  width: 90vw;
+  height: 30vh;
+
+  background-color: white;
+  border-radius: 2rem 2rem 0 0;
+}
+.form > p {
+  font-size: 0.5rem;
+}
+.form > div {
+  width:80%;
+  height: 80%;
+}
+.openForm{
+  animation-name:open;
+  animation-duration: 1s;
+  transition: ease-out;
+}
+.closeForm{
+  animation-name:close;
+  animation-duration: 1.5s;
+  transition: ease-out;
+}
+#choose{
+  width:70%;
+  height: 50%;
+}
+#choose > button:nth-child(2){
+  background-color: var(--seconderyColor);
+}
+#login, #register{
+  display: none;
+}
+.logTemplate{
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.logTemplate * {
+  margin-bottom: 10%;
+}
+.logTemplate > input{
+  width:100%;
+  border: none;
+  border-bottom:0.2rem solid var(--seconderyColor);
+}
+.logTemplate > p{
+  line-height: 1.5rem;
+}
+.logTemplate span{
+  color: white;
+  background-color: var(--seconderyColor);
+  border-radius: 0.5rem;
+  padding: 0.1rem;
+}
+.btnTypeOne{
+  border: none;
+  background-color: var(--thirdColor);
+  color: white;
+  border-radius: 2rem;
+  width: 70vw;
+  aspect-ratio: 1 / 0.2;
+
+  font-size: 1rem;
+}
+.btnTypeOne:not(:first-child){
+  margin-top: 5%;
+}
+  
+.fadeOut{
+  animation: fade;
+  animation-duration: 200ms;
+  /*transition: ease-out;*/
+}
+
+
+#homeScreen{
+  display: none;
+}
+
+#topLogo > p{
+  font-size: 2rem;
+}
+#topLogo{
+  box-shadow: 0 1vh 5vh var(--grey);
+  height: 10vh;
+  width: 100vw;
+  z-index: 2;
+}
+
+#chatsList{
+  width: 95vw;
+  height: 85vh;
+  padding:2.5vh 2.5vw;
+
+  justify-content: flex-start;
+}
+.chatCard{
+  width: 100%;
+  height: 6vh;
+  background-color: var(--grey);
+  border-radius: 1rem;
+
+  margin-top: 1vh;
+}
+
+/* Fonts */
+
+@font-face {
+  font-family: logo;
+  src: url("./fonts/Aloevera-OVoWO.ttf");
+}
+
+/* animations */
+
+@keyframes open{
+  0%   {height: 30vh;}
+  100% {height: 80vh;}
+}
+@keyframes close{
+  0%   {height: 80vh;}
+  100% {height: 10vh;}
+}
+@keyframes fade{
+  from {opacity: 100%;}
+  to   {opacity: 0%;}
+}
