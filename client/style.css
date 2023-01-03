@@ -3,6 +3,7 @@
   --seconderyColor: #e9d5d7;
   --thirdColor: #8bd6c4;
   --grey: #f6f6f6;
+  --red: #eb2e2e;
 
   font-size: 5vw;
   color: var(--primaryColor);
@@ -16,9 +17,11 @@
 
 body{
   margin: 0;
+  overflow: hidden !important;
 }
 input:focus{
   outline: none;
+  border: 0.2rem solid white;
   border-bottom: 0.2rem solid var(--thirdColor) !important;
 }
 
@@ -146,11 +149,12 @@ input:focus{
 }
 
 #chatsList{
-  width: 95vw;
+  width: 90vw;
   height: 85vh;
   padding:2.5vh 2.5vw;
 
   justify-content: flex-start;
+  overflow-y:scroll;
 }
 .chatCard{
   width: 100%;
@@ -160,7 +164,35 @@ input:focus{
 
   margin-top: 1vh;
 }
+.redHighlight{
+  border: 0.2rem solid var(--red) !important;
+}
 
+#chatPage{
+  display: none;
+}
+
+.visible{
+  display: block !important;
+}
+.invisible{
+  display: none !important;
+}
+
+.myMessage, .otherMessage{
+  max-width: 50%;
+  height: fit-content;
+  border-radius: 2rem;
+}
+
+.myMessage{
+  align-self: flex-end;
+  background-color: var(--seconderyColor);
+}
+.otherMessage{
+  align-self: flex-start;
+  background-color: var(--thirdColor);
+}
 /* Fonts */
 
 @font-face {
