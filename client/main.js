@@ -1,4 +1,4 @@
-let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage;
+let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat;
 let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName;
 
 let email, password;
@@ -13,6 +13,7 @@ function initiate(){
     divHomeScreen = document.querySelector("#homeScreen");
     divChatsList = document.querySelector("#chatsList");
     divChatPage = document.querySelector("#chatPage");
+    divChat = document.querySelector("#chat");
 
     inputLoginEmail = document.querySelector("#loginEmail");
     inputLoginPassword = document.querySelector("#loginPassword");
@@ -73,6 +74,7 @@ function login(){
 
                 let contactsList = contacts(JSON.parse(response),email);
                 createContactCard(contactsList, divChatsList);
+                retriveMessages();
             }
         });
     } 
@@ -139,19 +141,43 @@ function createContactCard(list,element){
         card.onclick = openChat;
         card.innerHTML = list[i];
 
+        messages[list[i]] = [];
+
         element.appendChild(card);
+    }
+}
+
+function retriveMessages(){
+    let keys = Object.keys(messages);
+    for(let i = 0; i<keys.length; i++){
+        sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i], (response)=>{
+            let resp = JSON.parse(response);
+            for(let j = 0; j<resp.length; j++){
+                messages[keys[i]].push(resp[j]);
+            }
+        }); 
     }
 }
 
 function openChat(event){
     changeForm("toChatPage");
-    sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+event.target.id, (response)=>{
-        response.forEach((object)=>{});
-    });
+    createMessages(divChat, messages[event.target.id]);
 }
 
-function updateMessages(){
+function createMessages(element,array){
+    for(let i = 0; i<array.length; i++){
+        let message = document.createElement("div");
+        if(array[i].sender == email){
+            message.classList.add("myMessage");
+        }
+        else{
+            message.classList.add("otherMessage");
+        }
+        message.id = array[i].id;
+        message.innerHTML = array[i].content;
 
+        element.appendChild(message);
+    }
 }
 
 function contacts(response, email){

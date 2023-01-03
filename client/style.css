@@ -170,6 +170,26 @@ input:focus{
 
 #chatPage{
   display: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+#chat{
+  width: 100vw;
+  height: 84vh;
+  background-color: pink;
+
+  overflow-y: scroll;
+}
+#topName{
+  width:100vw;
+  height: 8vh;
+  background-color: aquamarine;
+}
+#keyboarDeck{
+  width:100vw;
+  height: 8vh;
+  background-color: rgb(98, 147, 130);
 }
 
 .visible{
@@ -182,7 +202,9 @@ input:focus{
 .myMessage, .otherMessage{
   max-width: 50%;
   height: fit-content;
-  border-radius: 2rem;
+  border-radius: 1rem;
+  padding:1rem;
+  margin:0.5rem 0.5rem 0 0.5rem;
 }
 
 .myMessage{
