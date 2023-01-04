@@ -130,29 +130,39 @@ http.createServer((req,res)=>{
             }
             else if(q.path.startsWith('/api/pull')){
                 let receiverEmail = q.query.receiver;
-                validateUser(email, password, res, (result,err)=>{
+                let lastId = q.query.lastId;
+                let conn = mysql.createConnection(databaseConnection);
+                conn.connect((err)=>{
                     if(err){
+                        conn.destroy();
                         res.writeHead(500, {'Content-Type':'text/plain'});
                         res.end();
+                        return;
                     }
                     else{
-                        if(result[0].count == 1){
-                            serverTools.query("SELECT * FROM messages WHERE (sender=? OR sender=?) AND (receiver=? OR receiver=?)",[email, receiverEmail, email, receiverEmail], (result, err)=>{
-                                if(err){
-                                    res.writeHead(500, {'Content-Type':'text/plain'});
-                                    res.end();
-                                    return;
+                        conn.query("SELECT COUNT(email) AS count FROM users WHERE email=? AND password=?",[email, password],(error1,result)=>{
+                            if(err){
+                                res.writeHead(500, {'Content-Type':'text/plain'});
+                                res.end();
+                            }
+                            else{
+                                if(result[0].count == 1){
+                                    conn.query("SELECT * FROM messages WHERE (sender=? OR sender=?) AND (receiver=? OR receiver=?) AND id>?",[email, receiverEmail, email, receiverEmail,lastId],(err, result)=>{
+                                        res.writeHead(200, {'Content-Type':'application/JSON'});
+                                        res.end(JSON.stringify(result));
+                                        conn.destroy();
+                                        return;
+                                    });
                                 }
                                 else{
-                                    res.writeHead(200, {'Content-Type':'application/JSON'});
-                                    res.end(JSON.stringify(result));
+                                    conn.destroy();
+                                    res.writeHead(200, {'Content-Type':'text/plain'});
+                                    res.end("user not found");
                                     return;
                                 }
-                            },res, databaseConnection);
-                        }
-                        else if(result[0].count == 0){
-
-                        }
+                            }
+                            
+                        });
                     }
                 });
             }

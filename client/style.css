@@ -216,6 +216,13 @@ input:focus{
   align-self: flex-start;
   background-color: var(--thirdColor);
 }
+
+#keyboardMessage{
+  border-radius: 1rem;
+  width: 80%;
+  height: fit-content;
+  word-break: keep-all;
+}
 /* Fonts */
 
 @font-face {

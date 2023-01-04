@@ -23,7 +23,7 @@ function initiate(){
     inputRegPassword = document.querySelector("#regPassword");
     inputRegPasswordRepeat = document.querySelector("#regPasswordRepeat");
     inputRegName = document.querySelector("#regName");
-    inputMessage = document.querySelector("#message");
+    inputMessage = document.querySelector("#keyboardMessage");
 }
 
 function loginAnimation(eventType){
@@ -152,24 +152,43 @@ function createContactCard(list,element){
 
 function retriveMessages(){
     let keys = Object.keys(messages);
+
     for(let i = 0; i<keys.length; i++){
-        sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i], (response)=>{
+        let lastId;
+        if(messages[keys[i]].length > 0)
+            lastId= messages[keys[i]][messages[keys[i]].length-1].id;
+        else
+            lastId = 0;
+        
+
+        console.log("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i]+"&lastId="+lastId);
+        sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i]+"&lastId="+lastId, (response)=>{
             let resp = JSON.parse(response);
+            if(pTopName.innerHTML == keys[i]){
+                createMessages(divChat, resp, keys[i]);
+            }
             for(let j = 0; j<resp.length; j++){
                 messages[keys[i]].push(resp[j]);
+            } 
+
+            if(i == keys.length-1){
+                setTimeout(()=>{retriveMessages();},500);
             }
-        }); 
+            return;
+        });
     }
 }
 
 function openChat(event){
     changeForm("toChatPage");
+    retriveMessages();
     createMessages(divChat, messages[event.target.id], event.target.id);
     currentChat = event.target.id;
     divChat.scrollTop = divChat.scrollHeight;
 }
 
 function createMessages(element,array, contact){
+    let shouldScroll = Math.round(divChat.scrollHeight-divChat.scrollTop) -150 < divChat.clientHeight  ? true : false;
     pTopName.innerHTML = contact;
     for(let i = 0; i<array.length; i++){
         let message = document.createElement("div");
@@ -184,6 +203,8 @@ function createMessages(element,array, contact){
 
         element.appendChild(message);
     }
+
+    if(shouldScroll) divChat.scrollTop = divChat.scrollHeight;
 }
 
 function contacts(response, email){
@@ -218,6 +239,7 @@ function changeForm(eventType){
 
 function backToHomePage(){
     changeForm("toHomeScreen");
+    pTopName.innerHTML = "";
     while(divChat.firstChild){
         divChat.removeChild(divChat.firstChild);
     }
@@ -230,10 +252,11 @@ function send(){
         "receiver":currentChat,
         "content":inputMessage.value
     };
-    sendHttpPostRequest("/api/send",JSON.stringify(body), (response)=>{
-        inputMessage.value ="";
-        console.log("it worked");
-    });
+    if(body.content != ""){
+        sendHttpPostRequest("/api/send",JSON.stringify(body), (response)=>{
+            inputMessage.value ="";
+        });
+    }
 }
 
 function sendHttpGetRequest(url,callback){
