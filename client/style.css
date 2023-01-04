@@ -34,7 +34,7 @@ input:focus{
 }
 .flexRow{
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
@@ -181,10 +181,11 @@ input:focus{
 
   overflow-y: scroll;
 }
-#topName{
+#topBanner{
   width:100vw;
   height: 8vh;
   background-color: aquamarine;
+  justify-content: space-around;
 }
 #keyboarDeck{
   width:100vw;

@@ -17,10 +17,12 @@ http.createServer((req,res)=>{
 
     if(q.path.startsWith('/api')){
 
-        let email = q.query.email;
-        let password = q.query.password;
-
-        if(email && password){
+        if(req.method == 'GET'){
+            email = q.query.email;
+            password = q.query.password;   
+        }
+        
+        if(req.method="POST" || (email && password)){
             if(q.path.startsWith('/api/login')){
                 
                 validateUser(email,password,res,(result,err)=>{
@@ -84,7 +86,47 @@ http.createServer((req,res)=>{
                 });
             }
             else if(q.path.startsWith('/api/send')){
-    
+                if(req.method == "POST"){
+                    serverTools.readPostBody(req, (strBody)=>{
+                        let body = JSON.parse(strBody);
+                        let email = body.email;
+                        let password = body.password;
+                        let receiver = body.receiver;
+
+                        validateUser(email,password,res,(result,err)=>{
+                            if(err){
+                                res.writeHead(500, {'Content-Type':'text/plain'});
+                                res.end();
+                                return;
+                            }
+                            else{
+                                if(result[0].count == 1){
+                                    console.log("found user");
+                                    serverTools.query("INSERT INTO messages(sender,receiver,content) VALUES(?,?,?)",[email,receiver, body.content],(result, error)=>{
+                                        if(error){
+                                            res.writeHead(500, {'Content-Type':'text/plain'});
+                                            res.end("failed");
+                                            return;
+                                        }
+                                        else{
+                                            console.log("message sent");
+                                            res.writeHead(200, {'Content-Type':'text/plain'});
+                                            res.end("successful");
+                                            return;
+                                        }
+                                    },res, databaseConnection);
+                                }
+                                else if(result[0].count == 0){
+                                    return;
+                                }
+                            }
+                        });
+                    });
+                }
+                else{
+                    res.writeHead(400, {'Content-Type':'text/plain'});
+                    res.end(); 
+                }
             }
             else if(q.path.startsWith('/api/pull')){
                 let receiverEmail = q.query.receiver;

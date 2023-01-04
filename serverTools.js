@@ -42,7 +42,7 @@ function getType(str){
 
 exports.readPostBody = function(req, callback){
     let body ='';
-    req.on('data', ()=>{
+    req.on('data', (data)=>{
         body += data;
     });
     req.on('end', ()=>{

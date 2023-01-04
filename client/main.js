@@ -1,7 +1,8 @@
-let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat;
-let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName;
+let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, pTopName;
+let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName, inputMessage;
 
 let email, password;
+let currentChat = "";
 let messages={};
 
 function initiate(){
@@ -14,6 +15,7 @@ function initiate(){
     divChatsList = document.querySelector("#chatsList");
     divChatPage = document.querySelector("#chatPage");
     divChat = document.querySelector("#chat");
+    pTopName = document.querySelector("#topName");
 
     inputLoginEmail = document.querySelector("#loginEmail");
     inputLoginPassword = document.querySelector("#loginPassword");
@@ -21,6 +23,7 @@ function initiate(){
     inputRegPassword = document.querySelector("#regPassword");
     inputRegPasswordRepeat = document.querySelector("#regPasswordRepeat");
     inputRegName = document.querySelector("#regName");
+    inputMessage = document.querySelector("#message");
 }
 
 function loginAnimation(eventType){
@@ -161,10 +164,13 @@ function retriveMessages(){
 
 function openChat(event){
     changeForm("toChatPage");
-    createMessages(divChat, messages[event.target.id]);
+    createMessages(divChat, messages[event.target.id], event.target.id);
+    currentChat = event.target.id;
+    divChat.scrollTop = divChat.scrollHeight;
 }
 
-function createMessages(element,array){
+function createMessages(element,array, contact){
+    pTopName.innerHTML = contact;
     for(let i = 0; i<array.length; i++){
         let message = document.createElement("div");
         if(array[i].sender == email){
@@ -201,13 +207,33 @@ function changeForm(eventType){
         divReg.classList.add("logTemplate");
     }
     else if(eventType == "toChatPage"){
-        divHomeScreen.classList.add("invisible");;
+        divHomeScreen.classList.remove("visible");;
         divChatPage.classList.add("visible");
     }
     else if(eventType == "toHomeScreen"){
         divHomeScreen.classList.add("visible");
-        divChatPage.classList.add("invisible");
+        divChatPage.classList.remove("visible");
     }
+}
+
+function backToHomePage(){
+    changeForm("toHomeScreen");
+    while(divChat.firstChild){
+        divChat.removeChild(divChat.firstChild);
+    }
+}
+
+function send(){
+    let body = {
+        "email":email,
+        "password":password,
+        "receiver":currentChat,
+        "content":inputMessage.value
+    };
+    sendHttpPostRequest("/api/send",JSON.stringify(body), (response)=>{
+        inputMessage.value ="";
+        console.log("it worked");
+    });
 }
 
 function sendHttpGetRequest(url,callback){
@@ -228,7 +254,7 @@ function sendHttpGetRequest(url,callback){
     httpRequest.send();
 } 
 
-function sendHttpPostRequest(url,callback,body){
+function sendHttpPostRequest(url,body,callback){
     let httpRequest = new XMLHttpRequest();
 
     httpRequest.onreadystatechange = ()=>{
