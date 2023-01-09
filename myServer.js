@@ -35,7 +35,7 @@ http.createServer((req,res)=>{
                         if(result[0].count == 1){
                             console.log("login successful");
 
-                            serverTools.query('SELECT DISTINCT sender, receiver FROM messages AS lee WHERE sender=? OR receiver=?',[email,email],(secondResult,error)=>{
+                            serverTools.query('SELECT DISTINCT sender, receiver FROM messages WHERE sender=? OR receiver=?',[email,email],(secondResult,error)=>{
                                 if(error){
                                     res.writeHead(200, {'Content-Type':'text/plain'});
                                     res.end("noMessagesFound");
@@ -84,6 +84,40 @@ http.createServer((req,res)=>{
                         });
                     }
                 });
+            }
+            else if(q.path.startsWith('/api/lookForContact')){
+                let contactEmail = q.query.contactEmail;
+                if(contactEmail){
+                    let conn = mysql.createConnection(databaseConnection);
+                    conn.connect((err)=>{
+                        if(err){
+                            res.writeHead(500, {'Content-Type':'text/plain'});
+                            res.end();
+                            return; 
+                        }
+                        else{
+                            conn.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=?",[contactEmail],(error, result)=>{
+                                if(error){
+                                    res.writeHead(500, {'Content-Type':'text/plain'});
+                                    res.end();
+                                    return; 
+                                }
+                                else{
+                                    if(result[0].count == 1){
+                                        res.writeHead(200, {'Content-Type':'text/plain'});
+                                        res.end("user_found");
+                                        return;   
+                                    }
+                                    else if(result[0].count == 0){
+                                        res.writeHead(200, {'Content-Type':'text/plain'});
+                                        res.end("user_not_found");
+                                        return;    
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
             }
             else if(q.path.startsWith('/api/send')){
                 if(req.method == "POST"){
@@ -140,7 +174,7 @@ http.createServer((req,res)=>{
                         return;
                     }
                     else{
-                        conn.query("SELECT COUNT(email) AS count FROM users WHERE email=? AND password=?",[email, password],(error1,result)=>{
+                        conn.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=? AND BINARY password=?",[email, password],(error1,result)=>{
                             if(err){
                                 res.writeHead(500, {'Content-Type':'text/plain'});
                                 res.end();
@@ -178,7 +212,7 @@ http.createServer((req,res)=>{
 }).listen(8080);
 
 function validateUser(email,password,res,callback){
-    serverTools.query("SELECT COUNT(email) AS count FROM users WHERE email=? AND password=?",[email, password],(result,err)=>{
+    serverTools.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=? AND  BINARY password=?",[email, password],(result,err)=>{
         callback(result,err);
     },res,databaseConnection);
 }

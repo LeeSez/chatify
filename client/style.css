@@ -135,7 +135,9 @@ input:focus{
 
 
 #homeScreen{
-  display: none;
+  width: 100vw;
+  height: 100vh;
+  justify-content: space-between;
 }
 
 #topLogo > p{
@@ -150,7 +152,6 @@ input:focus{
 
 #chatsList{
   width: 90vw;
-  height: 85vh;
   padding:2.5vh 2.5vw;
 
   justify-content: flex-start;
@@ -169,7 +170,6 @@ input:focus{
 }
 
 #chatPage{
-  display: none;
   width: 100vw;
   height: 100vh;
 }
@@ -178,6 +178,8 @@ input:focus{
   width: 100vw;
   height: 84vh;
   background-color: pink;
+
+  justify-content: flex-start;
 
   overflow-y: scroll;
 }
@@ -193,9 +195,6 @@ input:focus{
   background-color: rgb(98, 147, 130);
 }
 
-.visible{
-  display: block !important;
-}
 .invisible{
   display: none !important;
 }
@@ -222,6 +221,18 @@ input:focus{
   width: 80%;
   height: fit-content;
   word-break: keep-all;
+}
+
+#newContact{
+  width: 90vw;
+  height: 20vh;
+  
+  position: absolute;
+  top:20vh;
+  margin: 0 5vw;
+
+  border-radius: 1rem;
+  background-color: #8bd6c4;
 }
 /* Fonts */
 

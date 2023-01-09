@@ -1,5 +1,5 @@
-let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, pTopName;
-let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName, inputMessage;
+let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, pTopName, divNewContact;
+let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName, inputMessage, inputNewContact;
 
 let email, password;
 let currentChat = "";
@@ -16,6 +16,7 @@ function initiate(){
     divChatPage = document.querySelector("#chatPage");
     divChat = document.querySelector("#chat");
     pTopName = document.querySelector("#topName");
+    divNewContact = document.querySelector("#newContact");
 
     inputLoginEmail = document.querySelector("#loginEmail");
     inputLoginPassword = document.querySelector("#loginPassword");
@@ -24,6 +25,7 @@ function initiate(){
     inputRegPasswordRepeat = document.querySelector("#regPasswordRepeat");
     inputRegName = document.querySelector("#regName");
     inputMessage = document.querySelector("#keyboardMessage");
+    inputNewContact = document.querySelector("#searchNewContact");
 }
 
 function loginAnimation(eventType){
@@ -72,7 +74,7 @@ function login(){
             
                 setTimeout(()=>{
                     divIntro.classList.add("invisible");
-                    divHomeScreen.classList.add("visible");
+                    divHomeScreen.classList.remove("invisible");
                 },time+400);  
 
                 let contactsList = contacts(JSON.parse(response),email);
@@ -160,8 +162,6 @@ function retriveMessages(){
         else
             lastId = 0;
         
-
-        console.log("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i]+"&lastId="+lastId);
         sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i]+"&lastId="+lastId, (response)=>{
             let resp = JSON.parse(response);
             if(pTopName.innerHTML == keys[i]){
@@ -228,16 +228,18 @@ function changeForm(eventType){
         divReg.classList.add("logTemplate");
     }
     else if(eventType == "toChatPage"){
-        divHomeScreen.classList.remove("visible");;
-        divChatPage.classList.add("visible");
+        divHomeScreen.classList.add("invisible");
+        divChatPage.classList.remove("invisible");
     }
     else if(eventType == "toHomeScreen"){
-        divHomeScreen.classList.add("visible");
-        divChatPage.classList.remove("visible");
+        divHomeScreen.classList.remove("invisible");
+        divChatPage.classList.add("invisible");
     }
 }
 
 function backToHomePage(){
+    if(!divNewContact.classList.contains("invisible"))
+        divNewContact.classList.add("invisible");
     changeForm("toHomeScreen");
     pTopName.innerHTML = "";
     while(divChat.firstChild){
@@ -256,6 +258,34 @@ function send(){
         sendHttpPostRequest("/api/send",JSON.stringify(body), (response)=>{
             inputMessage.value ="";
         });
+    }
+}
+
+function searchNewContact(){
+    contactEmail = inputNewContact.value;
+    let keys = Object.keys(messages);
+    if(contactEmail & !keys.includes(contactEmail)){
+        sendHttpGetRequest("/api/lookForContact?contactEmail="+contactEmail, (response)=>{
+            if(response == "user_found"){
+                inputNewContact.value = "";
+                pTopName.innerHTML = contactEmail;
+                currentChat = contactEmail;
+                changeForm("toChatPage");
+                messages[contactEmail] = [];
+                createContactCard([contactEmail],divChatsList);
+            }
+            else if(response == "user_not_found"){
+                console.log("user not found");
+            }
+        });
+    }
+}
+
+function showContactSearch(){
+    if(divNewContact.classList.contains("invisible"))
+        divNewContact.classList.remove("invisible");
+    else{
+        divNewContact.classList.add("invisible");
     }
 }
 

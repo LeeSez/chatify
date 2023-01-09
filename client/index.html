@@ -46,16 +46,26 @@
 
     </div> <!--end of intro-->
 
-    <div id="homeScreen" class="flexCol">
+    <div id="homeScreen" class="flexCol invisible">
 
-        <div id="topLogo" class="flexCol">
+        <div id="topLogo" class="flexRow">
           <p class="logo">Chatify</p>
         </div>
 
+        <div id="newContact" class="flexCol invisible">
+          <h4>Who would you like to message?</h4>
+          <input id="searchNewContact" type="text" placeholder="recepient email" />
+          <button onclick="searchNewContact()">search</button>
+        </div>
+
         <div id="chatsList" class="flexCol"></div>
+
+        <div class="flexRow">
+          <button onclick="showContactSearch()">new contatct</button>
+        </div>
     </div> <!--end of homeScreen-->
 
-    <div id="chatPage" class="flexCol">
+    <div id="chatPage" class="flexCol invisible">
       <div id="topBanner" class="flexRow">
         <button onclick="backToHomePage()">Home</button>
         <p id="topName"></p>
