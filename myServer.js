@@ -24,9 +24,9 @@ http.createServer((req,res)=>{
         
         if(req.method="POST" || (email && password)){
             if(q.path.startsWith('/api/login')){
-                
-                validateUser(email,password,res,(result,err)=>{
+                validateUser(email,password,res,(err, result,generalConnection)=>{
                     if(err){
+                        console.log("1");
                         res.writeHead(500, {'Content-Type':'text/plain'});
                         res.end();
                     }
@@ -35,21 +35,24 @@ http.createServer((req,res)=>{
                         if(result[0].count == 1){
                             console.log("login successful");
 
-                            serverTools.query('SELECT DISTINCT sender, receiver FROM messages WHERE sender=? OR receiver=?',[email,email],(secondResult,error)=>{
+                            generalConnection.query('SELECT DISTINCT sender, receiver FROM messages WHERE sender=? OR receiver=?',[email,email],(error, secondResult)=>{
                                 if(error){
                                     res.writeHead(200, {'Content-Type':'text/plain'});
                                     res.end("noMessagesFound");
+                                    generalConnection.end();
                                     return;
                                 }
                                 else{
                                     res.writeHead(200, {'Content-Type':'application/JSON'});
                                     res.end(JSON.stringify(secondResult));
+                                    generalConnection.end();
                                     return;
                                 }
-                            },res,databaseConnection);
+                            });
                         }
 
                         else if(result[0].count == 0){
+                            generalConnection.end();
                             console.log("login failed");
                             res.writeHead(200, {'Content-Type':'text/plain'});
                             res.end("failedToLog");
@@ -60,22 +63,25 @@ http.createServer((req,res)=>{
             }
             else if(q.path.startsWith('/api/register')){
                 let name = q.query.name;
-                let conn = mysql.createConnection(databaseConnection);
-                conn.connect((err)=>{
+                let generalConnection = mysql.createConnection(databaseConnection);
+                generalConnection.connect((err)=>{
                     if(err){
+                        console.log("2");
                         res.writeHead(500, {'Content-Type':'text/plain'});
                         res.end();
                         return;
                     }
                     else{
-                        conn.query("INSERT INTO users(email,password,name) VALUES(?,?,?)",[email,password,name],(error,secondResult)=>{
+                        generalConnection.query("INSERT INTO users(email,password,name) VALUES(?,?,?)",[email,password,name],(error,secondResult)=>{
                             if(error){
+                                generalConnection.end();
                                 console.log("user already exists");
                                 res.writeHead(200, {'Content-Type':'text/plain'});
                                 res.end("alreadyExists");
                                 return;
                             }
                             else{
+                                generalConnection.end();
                                 console.log("register successful");
                                 res.writeHead(200, {'Content-Type':'text/plain'});
                                 res.end("registerSuccessful");
@@ -88,21 +94,25 @@ http.createServer((req,res)=>{
             else if(q.path.startsWith('/api/lookForContact')){
                 let contactEmail = q.query.contactEmail;
                 if(contactEmail){
-                    let conn = mysql.createConnection(databaseConnection);
-                    conn.connect((err)=>{
+                    generalConnection = mysql.createConnection(databaseConnection);
+                    generalConnection.connect((err)=>{
                         if(err){
+                            console.log("3");
                             res.writeHead(500, {'Content-Type':'text/plain'});
                             res.end();
                             return; 
                         }
                         else{
-                            conn.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=?",[contactEmail],(error, result)=>{
+                            generalConnection.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=?",[contactEmail],(error, result)=>{
                                 if(error){
+                                    generalConnection.end();
+                                    console.log("4");
                                     res.writeHead(500, {'Content-Type':'text/plain'});
                                     res.end();
                                     return; 
                                 }
                                 else{
+                                    generalConnection.end();
                                     if(result[0].count == 1){
                                         res.writeHead(200, {'Content-Type':'text/plain'});
                                         res.end("user_found");
@@ -127,8 +137,9 @@ http.createServer((req,res)=>{
                         let password = body.password;
                         let receiver = body.receiver;
 
-                        validateUser(email,password,res,(result,err)=>{
+                        validateUser(email,password,res,(err, result,generalConnection)=>{
                             if(err){
+                                console.log("5");
                                 res.writeHead(500, {'Content-Type':'text/plain'});
                                 res.end();
                                 return;
@@ -136,8 +147,10 @@ http.createServer((req,res)=>{
                             else{
                                 if(result[0].count == 1){
                                     console.log("found user");
-                                    serverTools.query("INSERT INTO messages(sender,receiver,content) VALUES(?,?,?)",[email,receiver, body.content],(result, error)=>{
+                                    generalConnection.query("INSERT INTO messages(sender,receiver,content) VALUES(?,?,?)",[email,receiver, body.content],(error, result)=>{
+                                        generalConnection.end();
                                         if(error){
+                                            console.log("6");
                                             res.writeHead(500, {'Content-Type':'text/plain'});
                                             res.end("failed");
                                             return;
@@ -148,9 +161,10 @@ http.createServer((req,res)=>{
                                             res.end("successful");
                                             return;
                                         }
-                                    },res, databaseConnection);
+                                    });
                                 }
                                 else if(result[0].count == 0){
+                                    generalConnection.end();
                                     return;
                                 }
                             }
@@ -165,43 +179,36 @@ http.createServer((req,res)=>{
             else if(q.path.startsWith('/api/pull')){
                 let receiverEmail = q.query.receiver;
                 let lastId = q.query.lastId;
-                let conn = mysql.createConnection(databaseConnection);
-                conn.connect((err)=>{
-                    if(err){
-                        conn.destroy();
-                        res.writeHead(500, {'Content-Type':'text/plain'});
-                        res.end();
-                        return;
-                    }
-                    else{
-                        conn.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=? AND BINARY password=?",[email, password],(error1,result)=>{
-                            if(err){
+                
+                validateUser(email, password, res, (err, result,generalConnection)=>{
+                    if(result[0].count == 1){
+                        generalConnection.query("SELECT * FROM messages WHERE (sender=? OR sender=?) AND (receiver=? OR receiver=?) AND id>?",[email, receiverEmail, email, receiverEmail,lastId],(error1, result1)=>{
+                            if(error1){
+                                generalConnection.end();
+                                console.log("7");
                                 res.writeHead(500, {'Content-Type':'text/plain'});
                                 res.end();
+                                return;
                             }
                             else{
-                                if(result[0].count == 1){
-                                    conn.query("SELECT * FROM messages WHERE (sender=? OR sender=?) AND (receiver=? OR receiver=?) AND id>?",[email, receiverEmail, email, receiverEmail,lastId],(err, result)=>{
-                                        res.writeHead(200, {'Content-Type':'application/JSON'});
-                                        res.end(JSON.stringify(result));
-                                        conn.destroy();
-                                        return;
-                                    });
-                                }
-                                else{
-                                    conn.destroy();
-                                    res.writeHead(200, {'Content-Type':'text/plain'});
-                                    res.end("user not found");
-                                    return;
-                                }
+                                res.writeHead(200, {'Content-Type':'application/JSON'});
+                                res.end(JSON.stringify(result1));
+                                generalConnection.end();
+                                return;
                             }
-                            
                         });
+                    }
+                    else if(result[0].count == 0){
+                        generalConnection.end();
+                        res.writeHead(200, {'Content-Type':'text/plain'});
+                        res.end("user not found");
+                        return;
                     }
                 });
             }
         }
         else{
+            console.log("8");
             res.writeHead(500, {'Content-Type':'text/plain'});
             res.end();
         }
@@ -212,7 +219,19 @@ http.createServer((req,res)=>{
 }).listen(8080);
 
 function validateUser(email,password,res,callback){
-    serverTools.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=? AND  BINARY password=?",[email, password],(result,err)=>{
-        callback(result,err);
-    },res,databaseConnection);
+    let generalConnection = mysql.createConnection(databaseConnection);
+    generalConnection.connect((err)=>{
+        if(err){
+            generalConnection.end();
+            console.log("9");
+            res.writeHead(500, {'Content-Type':'text/plain'});
+            res.end();
+            return;
+        }
+        else{
+            generalConnection.query("SELECT COUNT(email) AS count FROM users WHERE BINARY email=? AND  BINARY password=?",[email, password],(err,result)=>{
+                callback(err,result,generalConnection);
+            });
+        }
+    });
 }

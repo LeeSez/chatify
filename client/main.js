@@ -4,6 +4,7 @@ let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputR
 let email, password;
 let currentChat = "";
 let messages={};
+let nameDictionary = {};
 
 function initiate(){
     divIntro = document.querySelector("#intro");

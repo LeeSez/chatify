@@ -50,24 +50,3 @@ exports.readPostBody = function(req, callback){
     });
 }
 
-exports.query = function(sql, params, callback, res, connectionParameters){
-    let conn = mysql.createConnection(connectionParameters);
-    conn.connect((err)=>{
-        if(err){
-            console.log(err);
-            res.writeHead(500, {'Content-Type':'text/plain'});
-            res.end();
-        }else{
-            conn.query(sql,params,(err,result,fields)=>{
-                if(err){
-                    if(!callback(result, err)){
-                        res.writeHead(500, {'Content-Type':'text/plain'});
-                        res.end();
-                    }
-                }else{
-                    callback(result, err);
-                }
-            });
-        }
-    });
-};
