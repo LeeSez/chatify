@@ -43,8 +43,9 @@ http.createServer((req,res)=>{
                                     return;
                                 }
                                 else{
+                                    let contactList = contacts(secondResult, email);
                                     res.writeHead(200, {'Content-Type':'application/JSON'});
-                                    res.end(JSON.stringify(secondResult));
+                                    res.end(JSON.stringify(contactList));
                                     generalConnection.end();
                                     return;
                                 }
@@ -234,4 +235,16 @@ function validateUser(email,password,res,callback){
             });
         }
     });
+}
+
+
+function contacts(response, email){
+    let array = [];
+    for(let i = 0; i<response.length; i++){
+        
+        if(response[i].sender != email && !array.includes(response[i].sender)) array.push(response[i].sender);
+        
+        if(response[i].receiver != email && !array.includes(response[i].receiver)) array.push(response[i].receiver);
+    }
+    return array;
 }

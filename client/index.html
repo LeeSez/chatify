@@ -26,18 +26,18 @@
 
         <div id="login">
           <h2>Login</h2>
-          <input id="loginEmail" type="email" placeholder="Email" />
-          <input id="loginPassword" type="password" placeholder="Password" />
+          <input id="loginEmail" type="email" placeholder="Email" onkeypress="activateEnter(event, 'login')"/>
+          <input id="loginPassword" type="password" placeholder="Password" onkeypress="activateEnter(event, 'login')"/>
           <button class="btnTypeOne" onclick="login()">Login</button>
           <p>Haven't joined our community yet? <span onclick="changeForm('toRegister')">Register!</span></p>
         </div> <!--end of login-->
 
         <div id="register">
           <h2>Register</h2>
-          <input id="regEmail" type="email" placeholder="Email" />
-          <input id="regPassword" type="password" placeholder="Password" />
-          <input id="regPasswordRepeat" type="password" placeholder="Repeat Password" />
-          <input id="regName" type="text" placeholder="Name" />
+          <input id="regEmail" type="email" placeholder="Email" onkeypress="activateEnter(event, 'register')"/>
+          <input id="regPassword" type="password" placeholder="Password" onkeypress="activateEnter(event, 'register')"/>
+          <input id="regPasswordRepeat" type="password" placeholder="Repeat Password" onkeypress="activateEnter(event, 'register')"/>
+          <input id="regName" type="text" placeholder="Name" onkeypress="activateEnter(event, 'register')"/>
           <button class="btnTypeOne" onclick="register()">Register</button>
           <p>Already signed up? <span onclick="changeForm('toLogin')">Login!</span></p>
         </div> <!--end of login-->
@@ -61,7 +61,7 @@
         <div id="chatsList" class="flexCol"></div>
 
         <div class="flexRow">
-          <button onclick="showContactSearch()">new contatct</button>
+          <button class="btnTypeOne" onclick="showContactSearch()">new contatct</button>
         </div>
     </div> <!--end of homeScreen-->
 
@@ -72,7 +72,7 @@
       <div class="backArrow" onclick="backToHomePage()"></div>
       <div id="chat" class="flexCol"></div>
       <div id="keyboardDeck" class="flexRow">
-        <input type="text" id="keyboardMessage" placeholder="Type Here..."/>
+        <input type="text" id="keyboardMessage" placeholder="Type Here..." onkeypress="activateEnter(event, 'send')"/>
       </div>
       <div id="send" onclick="send()"></div>
     </div> <!--end of chatPage-->
