@@ -54,7 +54,7 @@
 
         <div id="newContact" class="flexCol invisible">
           <h4>Who would you like to message?</h4>
-          <input id="searchNewContact" type="text" placeholder="recepient email" />
+          <input id="searchNewContact" type="text" placeholder="recepient email" onkeypress="activateEnter(event, 'conSearch')"/>
           <button onclick="searchNewContact()">search</button>
         </div>
 

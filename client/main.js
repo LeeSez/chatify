@@ -5,7 +5,7 @@ let btnSend;
 let email, password;
 let currentChat = "";
 let messages={};
-let nameDictionary = {};
+let nameDictionary = [];
 
 function initiate(){
     divIntro = document.querySelector("#intro");
@@ -81,7 +81,8 @@ function login(){
                     divHomeScreen.classList.remove("invisible");
                 },time+400);  
 
-                createContactCard(JSON.parse(response), divChatsList);
+                nameDictionary = JSON.parse(response)
+                createContactCard(nameDictionary, divChatsList);
                 retriveMessages();
             }
         });
@@ -141,15 +142,15 @@ function validatePassword(password){
 }
 
 function createContactCard(list,element){
-    for(let i = 0; i<list.length; i++){
+    for(let i = 0; i<list[0].length; i++){
         let card = document.createElement("div");
         card.classList.add("chatCard");
         card.classList.add("flexCol");
-        card.id = list[i];
+        card.id = list[0][i];
         card.onclick = openChat;
-        card.innerHTML = list[i];
+        card.innerHTML = list[1][i];
 
-        messages[list[i]] = [];
+        messages[list[0][i]] = [];
 
         element.appendChild(card);
     }
@@ -167,7 +168,7 @@ function retriveMessages(){
         
         sendHttpGetRequest("/api/pull?email="+email+"&password="+password+"&receiver="+keys[i]+"&lastId="+lastId, (response)=>{
             let resp = JSON.parse(response);
-            if(pTopName.innerHTML == keys[i]){
+            if(nameDictionary[0][nameDictionary[1].indexOf(pTopName.innerHTML)] == keys[i]){
                 createMessages(divChat, resp, keys[i]);
             }
 
@@ -193,7 +194,7 @@ function openChat(event){
 
 function createMessages(element,array, contact){
     let shouldScroll = Math.round(divChat.scrollHeight-divChat.scrollTop) -150 < divChat.clientHeight  ? true : false;
-    pTopName.innerHTML = contact;
+    pTopName.innerHTML = nameDictionary[1][nameDictionary[0].indexOf(contact)];
     for(let i = 0; i<array.length; i++){
         let message = document.createElement("div");
         if(array[i].sender == email){
@@ -259,18 +260,23 @@ function send(){
 function searchNewContact(){
     contactEmail = inputNewContact.value;
     let keys = Object.keys(messages);
-    if(contactEmail & !keys.includes(contactEmail)){
+    if(contactEmail && !keys.includes(contactEmail)){
         sendHttpGetRequest("/api/lookForContact?contactEmail="+contactEmail, (response)=>{
-            if(response == "user_found"){
-                inputNewContact.value = "";
-                pTopName.innerHTML = contactEmail;
-                currentChat = contactEmail;
-                changeForm("toChatPage");
-                messages[contactEmail] = [];
-                createContactCard([contactEmail],divChatsList);
-            }
-            else if(response == "user_not_found"){
+            if(response == "user_not_found"){
                 console.log("user not found");
+            }
+            else {
+                let newContactName = JSON.parse(response);
+                newContactName = newContactName[0].name;
+                inputNewContact.value = "";
+                pTopName.innerHTML = newContactName
+                currentChat = contactEmail;
+
+                nameDictionary[0].push(contactEmail);
+                nameDictionary[1].push(newContactName);
+
+                changeForm("toChatPage");
+                createContactCard([[contactEmail],[newContactName]],divChatsList);
             }
         });
     }

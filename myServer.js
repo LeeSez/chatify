@@ -44,10 +44,9 @@ http.createServer((req,res)=>{
                                 }
                                 else{
                                     let contactList = contacts(secondResult, email);
-                                    res.writeHead(200, {'Content-Type':'application/JSON'});
-                                    res.end(JSON.stringify(contactList));
-                                    generalConnection.end();
-                                    return;
+                                    let names = [];
+                                    
+                                    getNames(contactList, names, generalConnection, res);
                                 }
                             });
                         }
@@ -113,13 +112,26 @@ http.createServer((req,res)=>{
                                     return; 
                                 }
                                 else{
-                                    generalConnection.end();
                                     if(result[0].count == 1){
-                                        res.writeHead(200, {'Content-Type':'text/plain'});
-                                        res.end("user_found");
-                                        return;   
+                                        //user found
+                                        generalConnection.query("SELECT name FROM users WHERE email=?",[contactEmail], (error2, result2)=>{
+                                            generalConnection.end();
+                                            if(error2){
+                                                console.log("5");
+                                                res.writeHead(500, {'Content-Type':'text/plain'});
+                                                res.end();
+                                                return; 
+                                            }
+                                            else{ 
+                                                res.writeHead(200, {'Content-Type':'application/JSON'});
+                                                res.end(JSON.stringify(result2));
+                                                return;  
+                                            }
+                                        });
                                     }
                                     else if(result[0].count == 0){
+                                        // user not found
+                                        generalConnection.end();
                                         res.writeHead(200, {'Content-Type':'text/plain'});
                                         res.end("user_not_found");
                                         return;    
@@ -247,4 +259,24 @@ function contacts(response, email){
         if(response[i].receiver != email && !array.includes(response[i].receiver)) array.push(response[i].receiver);
     }
     return array;
+}
+
+function getNames(contactList ,nameArr, generalConnection, res){
+    generalConnection.query("SELECT name FROM users WHERE email = ?", [contactList[nameArr.length]], (error2, res2)=>{
+        if(error2){
+
+        }
+        else{
+            nameArr.push(res2[0].name);
+            if(nameArr.length == contactList.length){
+                res.writeHead(200, {'Content-Type':'application/JSON'});
+                res.end(JSON.stringify([contactList, nameArr]));
+                generalConnection.end();
+                return;
+            }
+            else{
+                getNames(contactList, nameArr, generalConnection, res);
+            }
+        }
+    });
 }
