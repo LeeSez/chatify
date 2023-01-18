@@ -44,6 +44,7 @@ http.createServer((req,res)=>{
                                 }
                                 else{
                                     let contactList = contacts(secondResult, email);
+                                    contactList.push(email);
                                     let names = [];
                                     
                                     getNames(contactList, names, generalConnection, res);

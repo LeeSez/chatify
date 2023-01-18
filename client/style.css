@@ -80,6 +80,12 @@ input:focus{
   animation-duration: 1.5s;
   transition: ease-out;
 }
+.highform{
+  height: 80vh;
+}
+.lowform{
+  height: 10vh;
+}
 #choose{
   width:70%;
   height: 50%;
@@ -139,7 +145,13 @@ input:focus{
   height: 100vh;
   justify-content: space-between;
 }
-
+#divGreeting{
+  width: 90vw;
+  padding:5vh 2.5vw 2.5vh 2.5vw;
+}
+#divGreeting > p {
+  margin: 0;
+}
 #topLogo > p{
   font-size: 2rem;
 }
@@ -254,12 +266,12 @@ input:focus{
   background-color: #8bd6c4;
 }
 
-.backArrow, #send{
+.backArrow, #send, #logout{
   width: max(4vw,3vh);
   aspect-ratio: 1 / 1;
 }
 
-.backArrow{
+.backArrow, #logout{
   background-image: url("icons/back_arrow.png");
   background-position: center;
   background-size: cover;
@@ -267,6 +279,11 @@ input:focus{
   position: absolute;
   top: 2.5vh;
   left: 3vw
+}
+
+#logout{
+  background-image: url("icons/logout.png");
+  z-index: 10;
 }
 
 #send{
@@ -277,6 +294,15 @@ input:focus{
   background-image: url("icons/send.png");
   background-position: center;
   background-size: cover;
+}
+
+.title{
+  color:var(--thirdColor);
+  border-bottom: 0.1rem solid var(--thirdColor);
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: 100%;
+  margin: 0;
 }
 
 

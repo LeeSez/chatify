@@ -1,8 +1,9 @@
-let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, pTopName, divNewContact;
+let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, divNewContact;
 let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName, inputMessage, inputNewContact;
 let btnSend;
+let  pTopName, pGreeting;
 
-let email, password;
+let email, password, username;
 let currentChat = "";
 let messages={};
 let nameDictionary = [];
@@ -17,7 +18,6 @@ function initiate(){
     divChatsList = document.querySelector("#chatsList");
     divChatPage = document.querySelector("#chatPage");
     divChat = document.querySelector("#chat");
-    pTopName = document.querySelector("#topName");
     divNewContact = document.querySelector("#newContact");
 
     inputLoginEmail = document.querySelector("#loginEmail");
@@ -30,6 +30,9 @@ function initiate(){
     inputNewContact = document.querySelector("#searchNewContact");
 
     btnSend = document.querySelector("#send");
+
+    pTopName = document.querySelector("#topName");
+    pGreeting = document.querySelector("#pGreeting");
 }
 
 function loginAnimation(eventType){
@@ -38,7 +41,7 @@ function loginAnimation(eventType){
     divChoose.classList.add("fadeOut");
     
     setTimeout(()=>{
-        divChoose.style.display = "none";
+        divChoose.classList.add("invisible");
         divChoose.classList.remove("fadeOut");
     },time);
     
@@ -47,7 +50,7 @@ function loginAnimation(eventType){
     },time+200);
     
     setTimeout(()=>{
-        divEnteryForm.style.height = "80vh";
+        divEnteryForm.classList.add("highform");
         divEnteryForm.classList.remove("openForm");
         
         if(eventType == "login"){
@@ -71,8 +74,9 @@ function login(){
                 let time = 1450;
                 divLogin.classList.remove("logTemplate");
                 divEnteryForm.classList.add("closeForm");
+                divEnteryForm.classList.remove("highform");
                 setTimeout(()=>{
-                    divEnteryForm.style.height = "10vh";
+                    divEnteryForm.classList.add("lowform");
                     divEnteryForm.classList.remove("closeForm");
                 },time);
             
@@ -81,7 +85,13 @@ function login(){
                     divHomeScreen.classList.remove("invisible");
                 },time+400);  
 
-                nameDictionary = JSON.parse(response)
+                nameDictionary = JSON.parse(response);
+
+                username = nameDictionary[1][nameDictionary[1].length-1];
+                nameDictionary[0].pop();
+                nameDictionary[1].pop();
+
+                greet();
                 createContactCard(nameDictionary, divChatsList);
                 retriveMessages();
             }
@@ -229,6 +239,12 @@ function changeForm(eventType){
         divHomeScreen.classList.remove("invisible");
         divChatPage.classList.add("invisible");
     }
+    else if(eventType == "toIntro"){
+        divIntro.classList.remove("invisible");
+        divHomeScreen.classList.add("invisible");
+        divChoose.classList.remove("invisible");
+        divEnteryForm.classList.remove("lowform");
+    }
 }
 
 function backToHomePage(){
@@ -326,7 +342,6 @@ function sendHttpPostRequest(url,body,callback){
     httpRequest.send(body);
 } 
 
-
 function activateEnter(event ,name){
     if(event.key == "Enter"){
         switch(name){
@@ -346,5 +361,41 @@ function activateEnter(event ,name){
     }
 }
 
+function greet(){
+    let date = new Date();
+    let hour = date.getHours();
+    let ext;
+    if(hour>=5 && hour<=11){
+        ext = "Good Morning, ";
+    }
+    else if(hour>=12 && hour<=17){
+        ext = "Good Afternoon, ";
+    }
+    else if(hour>=18 && hour<=21){
+        ext = "Good Evening, ";
+    } 
+    else{
+        ext = "Good Night, ";
+    }
+    pGreeting.innerHTML = ext + username + ".";
+}
+
+function logout(){
+    changeForm("toIntro");
+    deleteChildNodes(1, divChatsList);
+
+    nameDictionary = [];
+    username = "";
+    password = "";
+    email = "";
+    messages = {};
+    currentChat = "";
+}
+
+function deleteChildNodes(keepNumber, element){
+    while(element.children.length > keepNumber){
+        element.removeChild(element.lastChild);
+    }
+}
 
 

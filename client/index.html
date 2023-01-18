@@ -52,13 +52,21 @@
           <p class="logo">Chatify</p>
         </div>
 
+        <div id="logout" onclick="logout()"></div>
+
+        <div id="divGreeting">
+          <p id="pGreeting"></p>
+        </div>
+
         <div id="newContact" class="flexCol invisible">
           <h4>Who would you like to message?</h4>
           <input id="searchNewContact" type="text" placeholder="recepient email" onkeypress="activateEnter(event, 'conSearch')"/>
           <button onclick="searchNewContact()">search</button>
         </div>
 
-        <div id="chatsList" class="flexCol"></div>
+        <div id="chatsList" class="flexCol">
+          <p class="title flexRow">CHATS</p>
+        </div>
 
         <div class="flexRow">
           <button class="btnTypeOne" onclick="showContactSearch()">new contatct</button>
