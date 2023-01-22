@@ -20,8 +20,8 @@
       <div id="enteryForm" class="form flexCol">
 
         <div id="choose" class="flexCol">
-          <button class="btnTypeOne" onclick="loginAnimation('login')">LOGIN</button>
-          <button class="btnTypeOne" onclick="loginAnimation('register')">GET STARTED</button>
+          <button id="btnLogin" class="btnTypeOne" onclick="loginAnimation('login')">LOGIN</button>
+          <button id="btnReg" class="btnTypeOne" onclick="loginAnimation('register')">GET STARTED</button>
         </div><!--end of choose-->
 
         <div id="login">
@@ -46,7 +46,7 @@
 
     </div> <!--end of intro-->
 
-    <div id="homeScreen" class="flexCol invisible">
+    <div id="homeScreen" class="flexCol hidden">
 
         <div id="topLogo" class="flexRow">
           <p class="logo">Chatify</p>
@@ -58,11 +58,15 @@
           <p id="pGreeting"></p>
         </div>
 
-        <div id="newContact" class="flexCol invisible">
-          <h4>Who would you like to message?</h4>
-          <input id="searchNewContact" type="text" placeholder="recepient email" onkeypress="activateEnter(event, 'conSearch')"/>
-          <button onclick="searchNewContact()">search</button>
-        </div>
+        <div id="searchBackground" class="flexCol hidden">
+          <div id="newContact" class="flexCol">
+            <div class="close" onclick="showContactSearch()"></div>
+            <h4>Who would you like to message?</h4>
+            <input id="searchNewContact" type="text" placeholder="Email" onkeypress="activateEnter(event, 'conSearch')"/>
+            <p id="searchError" class="alert invisible">User not found</p>
+            <button id="btnSearch" onclick="searchNewContact()" class="btnTypeOne">search</button>
+          </div>
+        </div> 
 
         <div id="chatsList" class="flexCol">
           <p class="title flexRow">CHATS</p>
@@ -73,14 +77,16 @@
         </div>
     </div> <!--end of homeScreen-->
 
-    <div id="chatPage" class="flexCol invisible">
+    <div id="chatPage" class="flexCol hidden">
       <div id="topBanner" class="flexRow">
         <p id="topName"></p>
       </div>
       <div class="backArrow" onclick="backToHomePage()"></div>
       <div id="chat" class="flexCol"></div>
       <div id="keyboardDeck" class="flexRow">
-        <input type="text" id="keyboardMessage" placeholder="Type Here..." onkeypress="activateEnter(event, 'send')"/>
+        <div id="keyback">
+          <input type="text" id="keyboardMessage" placeholder="Type Here..." onkeypress="activateEnter(event, 'send')"/>
+        </div>
       </div>
       <div id="send" onclick="send()"></div>
     </div> <!--end of chatPage-->

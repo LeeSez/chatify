@@ -219,8 +219,12 @@ input:focus{
   border-radius:1rem 1rem 0 0;
 }
 
-.invisible{
+.hidden{
   display: none !important;
+}
+
+.invisible{
+  visibility: hidden !important;
 }
 
 .myMessage, .otherMessage{
@@ -242,39 +246,66 @@ input:focus{
   /*background-color: var(--thirdColor);*/
 }
 
-#keyboardMessage{
+#keyback{
   border-radius: 1rem;
-  width: 60%;
-  height: fit-content;
+  width: 65%;
+  height: 50%;
   border:none;
-
+  background-color: white;
   padding: 2.5%;
+}
+#keyboardMessage{
+  height: 95%;
+  width: 100%;
+  border:none;
+  border-radius: 1rem;
 }
 #keyboardMessage:focus{
   border: none !important;
 }
 
-#newContact{
-  width: 90vw;
-  height: 20vh;
-  
+#searchBackground {
   position: absolute;
-  top:20vh;
-  margin: 0 5vw;
+  height: 100vh;
+  width: 100vw;
 
-  border-radius: 1rem;
-  background-color: #8bd6c4;
+  background-color: rgba(12, 12, 12, 0.352);
 }
 
-.backArrow, #send, #logout{
+#newContact{
+  width: 60vw;
+  height: 45vh;
+  
+  border-radius: 1rem;
+  background-color: white;
+
+  font-size: 1.5rem;
+
+  padding: 2.5vh 10vw;
+}
+#newContact > input {
+  width: 100%;
+}
+.close {
+  background-image: url("icons/close.png");
+  
+  align-self: flex-start;
+}
+#searchNewContact, #searchNewContact:focus {
+  border: none;
+  border-bottom: 0.1rem solid var(--primaryColor);
+}
+
+
+.backArrow, #send, #logout, .close{
   width: max(4vw,3vh);
   aspect-ratio: 1 / 1;
+  background-position: center;
+  background-size: cover;
 }
 
 .backArrow, #logout{
   background-image: url("icons/back_arrow.png");
-  background-position: center;
-  background-size: cover;
 
   position: absolute;
   top: 2.5vh;
@@ -305,7 +336,10 @@ input:focus{
   margin: 0;
 }
 
-
+.alert{
+  font-size: 1rem;
+  align-self: flex-start;
+}
 
 /* Fonts */
 

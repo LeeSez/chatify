@@ -1,7 +1,7 @@
-let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, divNewContact;
+let divIntro, divEnteryForm, divChoose, divLogin, divReg, divHomeScreen, divChatsList, divChatPage, divChat, divSearch, divKeyboardDeck, divKeyback;
 let inputLoginPassword, inputLoginEmail, inputRegEmail, inputRegPassword, inputRegPasswordRepeat, inputRegName, inputMessage, inputNewContact;
-let btnSend;
-let  pTopName, pGreeting;
+let btnSend, btnLogin, btnReg, btnSearch;
+let  pTopName, pGreeting, pSearchError;
 
 let email, password, username;
 let currentChat = "";
@@ -18,7 +18,9 @@ function initiate(){
     divChatsList = document.querySelector("#chatsList");
     divChatPage = document.querySelector("#chatPage");
     divChat = document.querySelector("#chat");
-    divNewContact = document.querySelector("#newContact");
+    divSearch = document.querySelector("#searchBackground");
+    divKeyboardDeck = document.querySelector("#keyboardDeck");
+    divKeyback = document.querySelector("#keyback");
 
     inputLoginEmail = document.querySelector("#loginEmail");
     inputLoginPassword = document.querySelector("#loginPassword");
@@ -30,9 +32,20 @@ function initiate(){
     inputNewContact = document.querySelector("#searchNewContact");
 
     btnSend = document.querySelector("#send");
+    btnLogin = document.querySelector("#btnLogin");
+    btnReg = document.querySelector("#btnReg");
+    btnSearch = document.querySelector("#btnSearch");
 
     pTopName = document.querySelector("#topName");
     pGreeting = document.querySelector("#pGreeting");
+    pSearchError = document.querySelector("#searchError");
+
+    /* keyboard expension related
+    inputMessage.addEventListener("input", ()=>{
+        if(inputMessage.scrollWidth >= divKeyback.clientWidth){
+            divKeyboardDeck.style.height = ((divKeyboardDeck.clientHeight/window.innerHeight)*100 + 2) + "vh";
+        }
+    });*/
 }
 
 function loginAnimation(eventType){
@@ -41,7 +54,7 @@ function loginAnimation(eventType){
     divChoose.classList.add("fadeOut");
     
     setTimeout(()=>{
-        divChoose.classList.add("invisible");
+        divChoose.classList.add("hidden");
         divChoose.classList.remove("fadeOut");
     },time);
     
@@ -66,7 +79,9 @@ function login(){
     email = inputLoginEmail.value;
     password = inputLoginPassword.value;
     if(email && password){
+        btnLogin.disabled = true;
         sendHttpGetRequest("/api/login?email="+email+"&password="+password,(response)=>{
+            btnLogin.disabled = false;
             if(response == "failedToLog"){
                 alert("wrong details");
             }
@@ -81,8 +96,9 @@ function login(){
                 },time);
             
                 setTimeout(()=>{
-                    divIntro.classList.add("invisible");
-                    divHomeScreen.classList.remove("invisible");
+                    divIntro.classList.add("hidden");
+                    divHomeScreen.classList.remove("hidden");
+                    divEnteryForm.classList.remove("lowform");
                 },time+400);  
 
                 nameDictionary = JSON.parse(response);
@@ -116,7 +132,9 @@ function register(){
             return;
         }
         else if(inputRegPassword.value == inputRegPasswordRepeat.value){
+            btnReg.disabled = true;
             sendHttpGetRequest("/api/register?email="+inputRegEmail.value+"&password="+inputRegPassword.value+"&name="+inputRegName.value, (response)=>{
+                btnReg.disabled = false;
                 if(response == "alreadyExists"){
                     console.log("user already exists");
                     alert("user already exists");
@@ -186,7 +204,7 @@ function retriveMessages(){
                 messages[keys[i]].push(resp[j]);
             } 
 
-            if(i == keys.length-1){
+            if(i == keys.length-1 && keys.length > 0){
                 setTimeout(()=>{retriveMessages();},500);
             }
             return;
@@ -232,24 +250,24 @@ function changeForm(eventType){
         divReg.classList.add("logTemplate");
     }
     else if(eventType == "toChatPage"){
-        divHomeScreen.classList.add("invisible");
-        divChatPage.classList.remove("invisible");
+        divHomeScreen.classList.add("hidden");
+        divChatPage.classList.remove("hidden");
     }
     else if(eventType == "toHomeScreen"){
-        divHomeScreen.classList.remove("invisible");
-        divChatPage.classList.add("invisible");
+        divHomeScreen.classList.remove("hidden");
+        divChatPage.classList.add("hidden");
     }
     else if(eventType == "toIntro"){
-        divIntro.classList.remove("invisible");
-        divHomeScreen.classList.add("invisible");
-        divChoose.classList.remove("invisible");
-        divEnteryForm.classList.remove("lowform");
+        divIntro.classList.remove("hidden");
+        divHomeScreen.classList.add("hidden");
+        divChoose.classList.remove("hidden");
+        divEnteryForm.classList.remove("hidden");
     }
 }
 
 function backToHomePage(){
-    if(!divNewContact.classList.contains("invisible"))
-        divNewContact.classList.add("invisible");
+    if(!divSearch.classList.contains("hidden"))
+    divSearch.classList.add("hidden");
     changeForm("toHomeScreen");
     pTopName.innerHTML = "";
     while(divChat.firstChild){
@@ -265,21 +283,25 @@ function send(){
         "content":inputMessage.value
     };
     if(body.content != ""){
-        btnSend.disable = true;
+        btnSend.disabled = true;
         sendHttpPostRequest("/api/send",JSON.stringify(body), (response)=>{
-            btnSend.disable = false;
+            btnSend.disabled = false;
             inputMessage.value ="";
         });
     }
 }
 
 function searchNewContact(){
+    pSearchError.classList.add("invisible");
     contactEmail = inputNewContact.value;
     let keys = Object.keys(messages);
     if(contactEmail && !keys.includes(contactEmail)){
+        btnSearch.disabled = true;
         sendHttpGetRequest("/api/lookForContact?contactEmail="+contactEmail, (response)=>{
+            btnSearch.disabled = false;
             if(response == "user_not_found"){
                 console.log("user not found");
+                pSearchError.classList.remove("invisible");
             }
             else {
                 let newContactName = JSON.parse(response);
@@ -299,10 +321,10 @@ function searchNewContact(){
 }
 
 function showContactSearch(){
-    if(divNewContact.classList.contains("invisible"))
-        divNewContact.classList.remove("invisible");
+    if(divSearch.classList.contains("hidden"))
+        divSearch.classList.remove("hidden");
     else{
-        divNewContact.classList.add("invisible");
+        divSearch.classList.add("hidden");
     }
 }
 
@@ -397,5 +419,7 @@ function deleteChildNodes(keepNumber, element){
         element.removeChild(element.lastChild);
     }
 }
+
+
 
 
