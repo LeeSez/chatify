@@ -245,6 +245,17 @@ input:focus{
   align-self: flex-start;
   /*background-color: var(--thirdColor);*/
 }
+.myMessage > p, .otherMessage > p{
+  margin: 0;
+  color: #8f8f8f;
+  font-size: 0.85rem;
+}
+.myMessage > p {
+  align-self: flex-end;
+}
+.otherMessage > p {
+  align-self: flex-start;
+}
 
 #keyback{
   border-radius: 1rem;

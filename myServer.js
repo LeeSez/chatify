@@ -161,7 +161,7 @@ http.createServer((req,res)=>{
                             else{
                                 if(result[0].count == 1){
                                     console.log("found user");
-                                    generalConnection.query("INSERT INTO messages(sender,receiver,content) VALUES(?,?,?)",[email,receiver, body.content],(error, result)=>{
+                                    generalConnection.query("INSERT INTO messages(sender,receiver,content,time) VALUES(?,?,?,?)",[email,receiver, body.content,body.time],(error, result)=>{
                                         generalConnection.end();
                                         if(error){
                                             console.log("6");

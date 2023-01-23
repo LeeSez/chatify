@@ -231,8 +231,17 @@ function createMessages(element,array, contact){
         else{
             message.classList.add("otherMessage");
         }
+        message.classList.add("flexCol");
+
+        let localTime = new Date(array[i].time);
+        let time  = document.createElement("p");
+        let hour = localTime.getHours() == 0 ? "00" : localTime.getHours();
+        let min = localTime.getMinutes() < 10 ? "0"+localTime.getMinutes() : localTime.getMinutes();
+        time.innerHTML = hour+":"+min;
+        
         message.id = array[i].id;
         message.innerHTML = array[i].content;
+        message.appendChild(time);
 
         element.appendChild(message);
     }
@@ -276,11 +285,13 @@ function backToHomePage(){
 }
 
 function send(){
+    let time = formatDate();
     let body = {
         "email":email,
         "password":password,
         "receiver":currentChat,
-        "content":inputMessage.value
+        "content":inputMessage.value,
+        "time":time
     };
     if(body.content != ""){
         btnSend.disabled = true;
@@ -289,6 +300,16 @@ function send(){
             inputMessage.value ="";
         });
     }
+}
+function formatDate(){
+    let date = new Date();
+    let month = (date.getMonth()+1) < 10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1);
+    let day = date.getDate() < 10 ? "0"+date.getDate() : date.getDate();
+    let hour = date.getHours() < 10 ? "0"+date.getHours() : date.getHours();
+    let min = date.getMinutes() < 10 ? "0"+date.getMinutes() : date.getMinutes();
+    let sec = date.getSeconds() < 10 ? "0"+date.getSeconds() : date.getSeconds();
+    let strDate = date.getFullYear()+"-"+month+"-"+day+" "+hour+":"+min+":"+sec;
+    return strDate;
 }
 
 function searchNewContact(){
