@@ -352,6 +352,14 @@ input:focus{
   align-self: flex-start;
 }
 
+.chatDate{
+  position:sticky;
+  background-color: var(--grey);
+  border-radius: 0.5rem;
+  top: 2vh;
+  padding: 0 2vw;
+}
+
 /* Fonts */
 
 @font-face {

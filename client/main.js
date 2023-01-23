@@ -7,6 +7,20 @@ let email, password, username;
 let currentChat = "";
 let messages={};
 let nameDictionary = [];
+let monthDictionary = {
+    0: "Jan",
+    1: "Feb",
+    2: "Mar",
+    3: "Apr",
+    4: "May",
+    5: "Jun",
+    6: "Jul",
+    7: "Aug",
+    8: "Sept",
+    9: "Oct",
+    10: "Nov",
+    11: "Dec"
+};
 
 function initiate(){
     divIntro = document.querySelector("#intro");
@@ -223,7 +237,38 @@ function openChat(event){
 function createMessages(element,array, contact){
     let shouldScroll = Math.round(divChat.scrollHeight-divChat.scrollTop) -150 < divChat.clientHeight  ? true : false;
     pTopName.innerHTML = nameDictionary[1][nameDictionary[0].indexOf(contact)];
+    let lastDate;
     for(let i = 0; i<array.length; i++){
+        let date = new Date(array[i].time);
+        let compare = ()=>{
+            let currentDate = date.getDate();
+            if(currentDate != lastDate){
+                let dateMark = document.createElement("p");
+                dateMark.innerHTML = currentDate +" "+ monthDictionary[date.getMonth()] + " " + date.getFullYear();
+                dateMark.classList.add("chatDate");
+                element.appendChild(dateMark);
+                lastDate = currentDate;
+            }
+        };
+        if(i == 0){
+            if(messages[contact][0].id != array[0].id){
+                let lastTime = new Date(messages[contact][messages[contact].length-1].time);
+                lastDate = lastTime.getDate();
+                compare();
+            }
+            else{
+                lastDate = date.getDate();
+                let dateMark = document.createElement("p");
+                dateMark.innerHTML = lastDate +" "+ monthDictionary[date.getMonth()] + " " + date.getFullYear();
+                dateMark.classList.add("chatDate");
+                element.appendChild(dateMark);
+            }
+        }
+        else{
+            compare();
+        }
+
+
         let message = document.createElement("div");
         if(array[i].sender == email){
             message.classList.add("myMessage");
